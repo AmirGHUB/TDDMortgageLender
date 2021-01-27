@@ -55,3 +55,13 @@ Then the requested loan amount is moved from available funds to pending funds
 And I see the available and pending funds reflect the changes accordingly
 
 ----------------------------------------------------------------------------------
+
+Given I have an approved loan
+When the applicant accepts my loan offer
+Then the loan amount is removed from the pending funds
+And the loan status is marked as accepted
+
+Given I have an approved loan
+When the applicant rejects my loan offer
+Then the loan amount is moved from the pending funds back to available funds
+And the loan status is marked as rejected

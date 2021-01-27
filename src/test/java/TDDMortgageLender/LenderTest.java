@@ -91,6 +91,37 @@ public class LenderTest {
 
     }
 
+    @Test
+    public void takeLoanAcceptanceAndUpdateFunds() throws UnQualifiedApplicantException {
+        lender.deposit_amount(500000);
+        Applicant jhon = new Applicant(20,730,100000);
+        jhon.setLender(lender);
+
+        jhon.apply(150000);
+        jhon.confirm();
+
+
+        assertEquals(0,lender.getPendingFund());
+        assertEquals(350000,lender.getAvailableFund());
+    }
+
+    @Test
+    public void takeLoanRejectionAndUpdateFunds() throws UnQualifiedApplicantException {
+        lender.deposit_amount(500000);
+        Applicant jhon = new Applicant(20,730,100000);
+        jhon.setLender(lender);
+
+        jhon.apply(150000);
+        jhon.reject();
+
+
+        assertEquals(0,lender.getPendingFund());
+        assertEquals(500000,lender.getAvailableFund());
+    }
+
+
+
+
 
 
 

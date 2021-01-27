@@ -66,4 +66,18 @@ public class Lender {
     public double getPendingFund() {
         return this.pendingFund;
     }
+
+    public void confirm(Applicant applicant) {
+        LoanResponse response=loanApplications.get(applicant);
+
+        response.setLoanStatus(LoanStatus.ACCEPTED);
+        this.pendingFund-=response.getLoanAmount();
+    }
+
+    public void reject(Applicant applicant) {
+        LoanResponse response=loanApplications.get(applicant);
+        response.setLoanStatus(LoanStatus.REJECTED);
+        this.pendingFund-=response.getLoanAmount();
+        this.availableFund+=response.getLoanAmount();
+    }
 }
