@@ -36,7 +36,44 @@ public class LenderTest {
 
         assertEquals("qualified" , response.getQualification());
         assertEquals( 250000 , response.getLoanAmount());
-        assertEquals(LoanStatus.QUALIFIED , response.getLoanStatus());
+        assertEquals(LoanStatus.APPROVED , response.getLoanStatus());
+    }
+
+    @Test
+    public void processLoanQualificationBasedOnAvailableFund(){
+        lender.deposit_amount(300000);
+        Applicant jhon = new Applicant(20,730,100000);
+        jhon.setLender(lender);
+
+        LoanResponse response = jhon.apply(150000);
+
+        assertEquals(LoanStatus.APPROVED , response.getLoanStatus());
+
+    }
+
+    //do the same test for on hold and DENIED loan applications
+    @Test
+    public void processLoanQualificationForUnqualifiedApplicant(){
+        lender.deposit_amount(300000);
+        Applicant jhon = new Applicant(40,600,100000);
+        jhon.setLender(lender);
+
+        LoanResponse response = jhon.apply(150000);
+
+        assertEquals(LoanStatus.DENIED , response.getLoanStatus());
+
+    }
+
+    @Test
+    public void processLoanQualificationForInsufficientAvailableFund(){
+        lender.deposit_amount(70000);
+        Applicant jhon = new Applicant(20,730,100000);
+        jhon.setLender(lender);
+
+        LoanResponse response = jhon.apply(150000);
+
+        assertEquals(LoanStatus.ONHOLD, response.getLoanStatus());
+
     }
 
 

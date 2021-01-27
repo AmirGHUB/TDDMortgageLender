@@ -24,4 +24,8 @@ public class LoanResponse {
     public LoanStatus getLoanStatus() {
         return this.status;
     }
+
+    public void setLoanStatus(LoanStatus status) {
+        this.status = status;
+    }
 }

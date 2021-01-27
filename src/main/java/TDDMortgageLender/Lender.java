@@ -24,16 +24,35 @@ public class Lender {
         LoanResponse response = null;
         if(applicant.getDti()<36 && applicant.getCreditScore()>620 && (requestedAmount*0.25)<=applicant.getSavingsAmount()){
             response = new LoanResponse("qualified" , requestedAmount , LoanStatus.QUALIFIED);
+            response = processLoan(requestedAmount,response);
             loanApplications.put(applicant,response);
         }else if(applicant.getDti()<36 && applicant.getCreditScore()>620 && (requestedAmount*0.25)>applicant.getSavingsAmount()){
             response = new LoanResponse("partially qualified" ,  (applicant.getSavingsAmount()*4),LoanStatus.QUALIFIED);
+            response = processLoan(requestedAmount,response);
             loanApplications.put(applicant,response);
         }else{
             response = new LoanResponse("not qualified" ,  0.0,LoanStatus.DENIED);
+            response = processLoan(requestedAmount,response);
             loanApplications.put(applicant,response);
         }
 
+
         return response;
 
+    }
+
+    private LoanResponse processLoan(double requestedAmount , LoanResponse response){
+
+        if(response.getLoanStatus()==LoanStatus.QUALIFIED){
+            if(requestedAmount<=this.availableFund){
+                response.setLoanStatus(LoanStatus.APPROVED);
+                return response;
+            }else{
+                response.setLoanStatus(LoanStatus.ONHOLD);
+                return response;
+            }
+        }else{
+            return response;
+        }
     }
 }

@@ -34,3 +34,18 @@ Example:
 |      250,000       |   30   |       700      |  50,000   |  partially qualified |   200,000     |  qualified |
 
 ----------------------------------------------------------------------------------------------------------------
+
+Given I have <available_funds> in available funds
+When I process a qualified loan
+Then the loan status is set to <status>
+
+Example:
+| loan_amount | available_funds |    status  |
+|   125,000   |    100,000      |   on hold  |
+|   125,000   |    200,000      |  approved  |
+|   125,000   |    125,000      |  approved  |
+
+When I process a not qualified loan
+Then I should see a warning to not proceed
+
+------------------------------------------------------------------------------------------
