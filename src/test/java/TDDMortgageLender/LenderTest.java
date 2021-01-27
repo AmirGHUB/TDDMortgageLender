@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LenderTest {
 
@@ -28,7 +29,7 @@ public class LenderTest {
     }
 
     @Test
-    public void qualifyALoanApplication(){
+    public void qualifyALoanApplication() throws UnQualifiedApplicantException {
         lender.deposit_amount(300000);
         Applicant simon =  new Applicant(25,700,150000);
         simon.setLender(lender);
@@ -40,7 +41,7 @@ public class LenderTest {
     }
 
     @Test
-    public void processLoanQualificationBasedOnAvailableFund(){
+    public void processLoanQualificationBasedOnAvailableFund() throws UnQualifiedApplicantException {
         lender.deposit_amount(300000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -58,14 +59,16 @@ public class LenderTest {
         Applicant jhon = new Applicant(40,600,100000);
         jhon.setLender(lender);
 
-        LoanResponse response = jhon.apply(150000);
+        //LoanResponse response =
 
-        assertEquals(LoanStatus.DENIED , response.getLoanStatus());
+        //assertEquals(LoanStatus.DENIED , response.getLoanStatus());
+
+        assertThrows(UnQualifiedApplicantException.class,()-> jhon.apply(150000),"Unqualified applicant, please do not proceed!");
 
     }
 
     @Test
-    public void processLoanQualificationForInsufficientAvailableFund(){
+    public void processLoanQualificationForInsufficientAvailableFund() throws UnQualifiedApplicantException {
         lender.deposit_amount(70000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -75,6 +78,21 @@ public class LenderTest {
         assertEquals(LoanStatus.ONHOLD, response.getLoanStatus());
 
     }
+
+    @Test
+    public void checkPendingAndAvailableFundOnApprovedApplicants() throws UnQualifiedApplicantException {
+        lender.deposit_amount(500000);
+        Applicant jhon = new Applicant(20,730,100000);
+        jhon.setLender(lender);
+        LoanResponse response = jhon.apply(150000);
+
+        assertEquals(150000,lender.getPendingFund());
+        assertEquals(350000, lender.getAvailableFund());
+
+    }
+
+
+
 
 
 }

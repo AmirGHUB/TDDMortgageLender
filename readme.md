@@ -49,3 +49,9 @@ When I process a not qualified loan
 Then I should see a warning to not proceed
 
 ------------------------------------------------------------------------------------------
+
+Given I have approved a loan
+Then the requested loan amount is moved from available funds to pending funds
+And I see the available and pending funds reflect the changes accordingly
+
+----------------------------------------------------------------------------------

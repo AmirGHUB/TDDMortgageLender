@@ -6,6 +6,7 @@ public class Lender {
 
     private double availableFund;
     private HashMap<Applicant, LoanResponse> loanApplications;
+    private double pendingFund;
 
     Lender(){
         availableFund = 0;
@@ -20,7 +21,7 @@ public class Lender {
         this.availableFund += amount;
     }
 
-    public LoanResponse qualifyApplicant(double requestedAmount, Applicant applicant) {
+    public LoanResponse qualifyApplicant(double requestedAmount, Applicant applicant) throws UnQualifiedApplicantException {
         LoanResponse response = null;
         if(applicant.getDti()<36 && applicant.getCreditScore()>620 && (requestedAmount*0.25)<=applicant.getSavingsAmount()){
             response = new LoanResponse("qualified" , requestedAmount , LoanStatus.QUALIFIED);
@@ -32,8 +33,9 @@ public class Lender {
             loanApplications.put(applicant,response);
         }else{
             response = new LoanResponse("not qualified" ,  0.0,LoanStatus.DENIED);
-            response = processLoan(requestedAmount,response);
             loanApplications.put(applicant,response);
+            processLoan(requestedAmount,response);
+
         }
 
 
@@ -41,10 +43,14 @@ public class Lender {
 
     }
 
-    private LoanResponse processLoan(double requestedAmount , LoanResponse response){
+    private LoanResponse processLoan(double requestedAmount , LoanResponse response) throws UnQualifiedApplicantException {
 
         if(response.getLoanStatus()==LoanStatus.QUALIFIED){
             if(requestedAmount<=this.availableFund){
+
+                this.availableFund-=requestedAmount;
+                this.pendingFund=requestedAmount;
+
                 response.setLoanStatus(LoanStatus.APPROVED);
                 return response;
             }else{
@@ -52,7 +58,12 @@ public class Lender {
                 return response;
             }
         }else{
-            return response;
+            throw new UnQualifiedApplicantException("Unqualified applicant, please do not proceed!");
+            //return response;
         }
+    }
+
+    public double getPendingFund() {
+        return this.pendingFund;
     }
 }

@@ -46,7 +46,7 @@ public class Applicant {
         this.lender = lender;
     }
 
-    public LoanResponse apply(double requestedAmount) {
+    public LoanResponse apply(double requestedAmount) throws UnQualifiedApplicantException {
         return this.lender.qualifyApplicant(requestedAmount,this);
     }
 }
