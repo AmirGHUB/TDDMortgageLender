@@ -7,6 +7,7 @@ public class LoanResponse {
     private String qualification;
     private double loanAmount;
     private LoanStatus status;
+    private LocalDate applicationDate;
 
     public LocalDate getApplicationDate() {
         return applicationDate;
@@ -16,7 +17,7 @@ public class LoanResponse {
         this.applicationDate = applicationDate;
     }
 
-    private LocalDate applicationDate;
+
 
 
     public LoanResponse(String qualification, double loanAmount, LoanStatus status) {

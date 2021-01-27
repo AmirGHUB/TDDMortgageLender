@@ -74,3 +74,11 @@ Given there is an approved loan offered more than 3 days ago
 When I check for expired loans
 Then the loan amount is move from the pending funds back to available funds
 And the loan status is marked as expired
+
+------------------------------------------------------------------------------
+
+Given there are loans in my system
+When I search by loan status (qualified, denied, on hold, approved, accepted, rejected, expired)
+Then I should see a list of loans and their details
+
+---------------------------------------

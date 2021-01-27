@@ -6,9 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LenderTest {
 
@@ -32,7 +33,7 @@ public class LenderTest {
     }
 
     @Test
-    public void qualifyALoanApplication() throws UnQualifiedApplicantException {
+    public void qualifyALoanApplication()  {
         lender.deposit_amount(300000);
         Applicant simon =  new Applicant(25,700,150000);
         simon.setLender(lender);
@@ -44,7 +45,7 @@ public class LenderTest {
     }
 
     @Test
-    public void processLoanQualificationBasedOnAvailableFund() throws UnQualifiedApplicantException {
+    public void processLoanQualificationBasedOnAvailableFund() {
         lender.deposit_amount(300000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -62,16 +63,15 @@ public class LenderTest {
         Applicant jhon = new Applicant(40,600,100000);
         jhon.setLender(lender);
 
-        //LoanResponse response =
+        LoanResponse response =jhon.apply(900000);
 
-        //assertEquals(LoanStatus.DENIED , response.getLoanStatus());
 
-        assertThrows(UnQualifiedApplicantException.class,()-> jhon.apply(150000),"Unqualified applicant, please do not proceed!");
+        assertEquals(LoanStatus.DENIED, response.getLoanStatus());
 
     }
 
     @Test
-    public void processLoanQualificationForInsufficientAvailableFund() throws UnQualifiedApplicantException {
+    public void processLoanQualificationForInsufficientAvailableFund() {
         lender.deposit_amount(70000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -83,7 +83,7 @@ public class LenderTest {
     }
 
     @Test
-    public void checkPendingAndAvailableFundOnApprovedApplicants() throws UnQualifiedApplicantException {
+    public void checkPendingAndAvailableFundOnApprovedApplicants()  {
         lender.deposit_amount(500000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -95,7 +95,7 @@ public class LenderTest {
     }
 
     @Test
-    public void takeLoanAcceptanceAndUpdateFunds() throws UnQualifiedApplicantException {
+    public void takeLoanAcceptanceAndUpdateFunds(){
         lender.deposit_amount(500000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -109,7 +109,7 @@ public class LenderTest {
     }
 
     @Test
-    public void takeLoanRejectionAndUpdateFunds() throws UnQualifiedApplicantException {
+    public void takeLoanRejectionAndUpdateFunds()  {
         lender.deposit_amount(500000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -123,7 +123,7 @@ public class LenderTest {
     }
 
     @Test
-    public void checkApprovedLoansForExpiration() throws UnQualifiedApplicantException {
+    public void checkApprovedLoansForExpiration() {
         lender.deposit_amount(500000);
         Applicant jhon = new Applicant(20,730,100000);
         jhon.setLender(lender);
@@ -145,5 +145,67 @@ public class LenderTest {
 
     }
 
+    @Test
+    public void searchLoansByStatus(){
 
+        //denied, on hold, approved, accepted, rejected, expired
+
+        List<LoanResponse> actual=new ArrayList<>();
+        List<LoanResponse> expected=new ArrayList<>();
+
+        /*--------------accepted----------*/
+        lender.deposit_amount(500000);
+        Applicant jhon = new Applicant(20,830,200000);
+        jhon.setLender(lender);
+        jhon.apply(50000);
+        LoanResponse loanResponse1=jhon.confirm();
+
+
+        /*--------------denied----------*/
+        Applicant amir = new Applicant(40,600,5000);
+        amir.setLender(lender);
+        LoanResponse loanResponse2=amir.apply(2000000);
+
+
+
+        /*--------------rejected----------*/
+        Applicant simon = new Applicant(10,800,150000);
+        simon.setLender(lender);
+        simon.apply(10000);
+        LoanResponse loanResponse3=simon.reject();
+
+
+
+        /*--------------approved----------*/
+        Applicant peter = new Applicant(20,730,40000);
+        peter.setLender(lender);
+        LoanResponse loanResponse4=peter.apply(100000);
+
+
+        /*--------------denied----------*/
+        Applicant sam = new Applicant(10,400,5000);
+        sam.setLender(lender);
+        LoanResponse loanResponse5=sam.apply(2000000);
+
+
+        /*--------------approved----------*/
+        Applicant bob = new Applicant(20,730,40000);
+        bob.setLender(lender);
+        LoanResponse loanResponse6=bob.apply(100000);
+
+
+        expected.add(loanResponse2);
+        expected.add(loanResponse5);
+
+
+        actual=lender.search(LoanStatus.DENIED);
+
+
+
+        for(LoanResponse loanResponse: actual){
+            assertTrue(expected.contains(loanResponse));
+        }
+        assertEquals(2,actual.size());
+
+    }
 }

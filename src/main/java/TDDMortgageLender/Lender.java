@@ -1,6 +1,7 @@
 package TDDMortgageLender;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class Lender {
         this.availableFund += amount;
     }
 
-    public LoanResponse qualifyApplicant(double requestedAmount, Applicant applicant) throws UnQualifiedApplicantException {
+    public LoanResponse qualifyApplicant(double requestedAmount, Applicant applicant) {
         LoanResponse response = null;
         if(applicant.getDti()<36 && applicant.getCreditScore()>620 && (requestedAmount*0.25)<=applicant.getSavingsAmount()){
             response = new LoanResponse("qualified" , requestedAmount , LoanStatus.QUALIFIED);
@@ -34,10 +35,12 @@ public class Lender {
             response = new LoanResponse("partially qualified" ,  (applicant.getSavingsAmount()*4),LoanStatus.QUALIFIED);
             response = processLoan(requestedAmount,response);
             loanApplications.put(applicant,response);
-        }else{
+        }else {
+
             response = new LoanResponse("not qualified" ,  0.0,LoanStatus.DENIED);
+
+            response=processLoan(requestedAmount,response);
             loanApplications.put(applicant,response);
-            processLoan(requestedAmount,response);
 
         }
 
@@ -46,7 +49,7 @@ public class Lender {
 
     }
 
-    private LoanResponse processLoan(double requestedAmount , LoanResponse response) throws UnQualifiedApplicantException {
+    private LoanResponse processLoan(double requestedAmount , LoanResponse response)  {
 
         if(response.getLoanStatus()==LoanStatus.QUALIFIED){
             if(requestedAmount<=this.availableFund){
@@ -61,8 +64,11 @@ public class Lender {
                 return response;
             }
         }else{
-            throw new UnQualifiedApplicantException("Unqualified applicant, please do not proceed!");
-            //return response;
+            response.setLoanStatus(LoanStatus.DENIED);
+
+            System.out.println("Unqualified applicant, please do not proceed!");
+            //throw new UnQualifiedApplicantException("Unqualified applicant, please do not proceed!");
+            return response;
         }
     }
 
@@ -70,18 +76,20 @@ public class Lender {
         return this.pendingFund;
     }
 
-    public void confirm(Applicant applicant) {
+    public LoanResponse confirm(Applicant applicant) {
         LoanResponse response=loanApplications.get(applicant);
 
         response.setLoanStatus(LoanStatus.ACCEPTED);
         this.pendingFund-=response.getLoanAmount();
+        return response;
     }
 
-    public void reject(Applicant applicant) {
+    public LoanResponse reject(Applicant applicant) {
         LoanResponse response=loanApplications.get(applicant);
         response.setLoanStatus(LoanStatus.REJECTED);
         this.pendingFund-=response.getLoanAmount();
         this.availableFund+=response.getLoanAmount();
+        return response;
     }
 
     public HashMap<Applicant,LoanResponse> getLoanApplications() {
@@ -98,5 +106,17 @@ public class Lender {
                 this.availableFund+=loanApplications.get(applicant).getLoanAmount();
             }
         }
+    }
+
+    public List<LoanResponse> search(LoanStatus loanStatus) {
+        List<LoanResponse> loans=new ArrayList<>();
+
+        for(LoanResponse loanResponse: loanApplications.values()){
+            if(loanResponse.getLoanStatus().equals(loanStatus)){
+                loans.add(loanResponse);
+            }
+        }
+        return loans;
+
     }
 }
