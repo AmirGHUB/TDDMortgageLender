@@ -27,5 +27,17 @@ public class LenderTest {
         assertEquals(100000 , lender.getAvailableFund());
     }
 
+    @Test
+    public void qualifyALoanApplication(){
+        lender.deposit_amount(300000);
+        Applicant simon =  new Applicant(25,700,150000);
+        simon.setLender(lender);
+        LoanResponse response = simon.apply(250000);
+
+        assertEquals("qualified" , response.getQualification());
+        assertEquals( 250000 , response.getLoanAmount());
+        assertEquals(LoanStatus.QUALIFIED , response.getLoanStatus());
+    }
+
 
 }
