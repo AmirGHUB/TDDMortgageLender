@@ -65,3 +65,12 @@ Given I have an approved loan
 When the applicant rejects my loan offer
 Then the loan amount is moved from the pending funds back to available funds
 And the loan status is marked as rejected
+
+-------------------------------------------------------------------------------
+
+Rule: approved loans expired in 3 days
+
+Given there is an approved loan offered more than 3 days ago
+When I check for expired loans
+Then the loan amount is move from the pending funds back to available funds
+And the loan status is marked as expired

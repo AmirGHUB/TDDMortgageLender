@@ -1,16 +1,29 @@
 package TDDMortgageLender;
 
+import java.time.LocalDate;
+
 public class LoanResponse {
 
     private String qualification;
     private double loanAmount;
     private LoanStatus status;
 
+    public LocalDate getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(LocalDate applicationDate) {
+        this.applicationDate = applicationDate;
+    }
+
+    private LocalDate applicationDate;
+
 
     public LoanResponse(String qualification, double loanAmount, LoanStatus status) {
         this.qualification = qualification;
         this.loanAmount = loanAmount;
         this.status = status;
+        this.applicationDate=LocalDate.now();
     }
 
     public String getQualification() {

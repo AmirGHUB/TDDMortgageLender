@@ -1,6 +1,9 @@
 package TDDMortgageLender;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Lender {
 
@@ -79,5 +82,21 @@ public class Lender {
         response.setLoanStatus(LoanStatus.REJECTED);
         this.pendingFund-=response.getLoanAmount();
         this.availableFund+=response.getLoanAmount();
+    }
+
+    public HashMap<Applicant,LoanResponse> getLoanApplications() {
+        return loanApplications;
+    }
+
+
+    public void checkForExpriration() {
+        //today - applicationdate>3: Exprired?
+        for(Applicant applicant: loanApplications.keySet()){
+            if((LocalDate.now().getDayOfMonth()-loanApplications.get(applicant).getApplicationDate().getDayOfMonth())>3){
+                loanApplications.get(applicant).setLoanStatus(LoanStatus.EXPIRED);
+                this.pendingFund-=loanApplications.get(applicant).getLoanAmount();
+                this.availableFund+=loanApplications.get(applicant).getLoanAmount();
+            }
+        }
     }
 }

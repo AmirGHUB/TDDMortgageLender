@@ -4,6 +4,9 @@ package TDDMortgageLender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -119,11 +122,28 @@ public class LenderTest {
         assertEquals(500000,lender.getAvailableFund());
     }
 
+    @Test
+    public void checkApprovedLoansForExpiration() throws UnQualifiedApplicantException {
+        lender.deposit_amount(500000);
+        Applicant jhon = new Applicant(20,730,100000);
+        jhon.setLender(lender);
+
+        jhon.apply(150000);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+        String c = "20/01/2021";
+
+
+        lender.getLoanApplications().get(jhon).setApplicationDate(LocalDate.parse(c,formatter));
+
+        lender.checkForExpriration();
 
 
 
 
+        assertEquals(LoanStatus.EXPIRED , lender.getLoanApplications().get(jhon).getLoanStatus());
 
+    }
 
 
 }
